@@ -101,6 +101,19 @@ AWS_ACCOUNT_ID=<id da conta> AWS_REGION=us-east-1 ./services/lambdas/process_car
 
 A Lambda, o ECR, o IAM, a tabela, a API Gateway e a regra IoT são criados pelo Terraform em [tech4parking-infra](https://github.com/willtechdev/tech4parking-infra).
 
+## Como validar a entrega
+
+Em uma validação end-to-end, uma mensagem do sensor e uma chamada da API devem mudar e mostrar o mesmo estado da vaga na tabela `ParkingSpots`.
+
+Pontos principais de validação:
+
+- workflow **Deploy Lambda process_car_parking** concluído com sucesso;
+- imagem publicada no ECR `process_car_parking-ecr-lambda`;
+- `POST /spots` criando a vaga e `GET /spots` listando-a;
+- mensagem publicada em `parking_sensor` atualizando `availability` da vaga;
+- `DELETE /spots?spot_id=<id>` removendo a vaga;
+- respostas com cabeçalhos CORS e logs da função no CloudWatch.
+
 ## Projeto Tech4Parking
 
 | Repositório | Camada |
