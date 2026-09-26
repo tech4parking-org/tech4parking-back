@@ -1,0 +1,95 @@
+openapi: 3.0.3
+info:
+  title: Tech4Parking · API de vagas
+  version: 1.0.0
+  description: |
+    API REST da Lambda `process_car_parking`, exposta pela API Gateway em `/spots`.
+    As vagas ficam na tabela DynamoDB `ParkingSpots`, e a disponibilidade também é atualizada pelos sensores (tópico IoT `parking_sensor`).
+servers:
+  - url: http://localhost:8000
+    description: Servidor local (services/lambdas/process_car_parking/local_server.py)
+  - url: https://{api_id}.execute-api.us-east-1.amazonaws.com/prod
+    description: API Gateway
+    variables:
+      api_id:
+        default: xxxxxxxxxx
+tags:
+  - name: Vagas
+paths:
+  /spots:
+    get:
+      tags: [Vagas]
+      summary: Lista as vagas
+      responses:
+        "200":
+          description: Lista de vagas
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: "#/components/schemas/Spot"}
+    post:
+      tags: [Vagas]
+      summary: Cadastra uma vaga
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/NewSpot"}
+            example:
+              name: Vaga E-03 · Av. Rebouças, 300
+              latitude: -23.5667
+              longitude: -46.6749
+              availability: disponível
+      responses:
+        "201":
+          description: Vaga criada
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/Spot"}
+        "400":
+          description: Dados inválidos
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/Error"}
+    delete:
+      tags: [Vagas]
+      summary: Remove uma vaga
+      parameters:
+        - name: spot_id
+          in: query
+          required: true
+          schema: {type: string}
+          example: A-01
+      responses:
+        "204": {description: Vaga removida}
+        "400":
+          description: spot_id ausente
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/Error"}
+components:
+  schemas:
+    Availability:
+      type: string
+      enum: [disponível, ocupada]
+    NewSpot:
+      type: object
+      required: [name, latitude, longitude]
+      properties:
+        spot_id: {type: string, description: "Opcional; gerado se omitido"}
+        name: {type: string}
+        latitude: {type: number}
+        longitude: {type: number}
+        availability: {$ref: "#/components/schemas/Availability"}
+    Spot:
+      allOf:
+        - $ref: "#/components/schemas/NewSpot"
+        - type: object
+          properties:
+            distance: {type: number, description: "Última distância medida pelo sensor (cm)"}
+            updated_at: {type: string, format: date-time}
+    Error:
+      type: object
+      properties:
+        message: {type: string}
