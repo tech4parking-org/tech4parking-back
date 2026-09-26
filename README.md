@@ -3,7 +3,7 @@
 </h1>
 
 <p align="center">
-  <img src="docs/arch.gif" alt="Arquitetura do Tech4Parking na AWS" />
+  <img src="docs/api-demo.gif" alt="Demonstração da API de vagas no Swagger UI" />
 </p>
 
 <p align="center">
@@ -20,6 +20,12 @@ Backend serverless do **Tech4Parking**. Uma única **AWS Lambda** em Python mant
 - o **web app**, que lista, cadastra e remove vagas pela **API Gateway**.
 
 A Lambda roda como **imagem Docker** publicada no **Amazon ECR**, e o deploy é feito pelo **GitHub Actions**.
+
+## Arquitetura
+
+<p align="center">
+  <img src="docs/arch.gif" alt="Arquitetura do Tech4Parking na AWS" />
+</p>
 
 ## O que foi construído
 
@@ -75,8 +81,12 @@ tech4parking-back/
 │   ├── process_car_parking.py   # Handler: sensor + API /spots
 │   ├── requirements.txt         # Dependências (boto3)
 │   ├── Dockerfile               # Imagem da Lambda
-│   └── deploy.sh                # Deploy manual
-├── docs/arch.gif                # Diagrama da arquitetura
+│   ├── deploy.sh                # Deploy manual
+│   └── local_server.py          # API local com Swagger UI (sem AWS)
+├── docs/
+│   ├── api-demo.gif             # Demonstração da API
+│   ├── arch.gif                 # Diagrama da arquitetura
+│   └── openapi.yaml             # Especificação OpenAPI 3.0
 └── README.md
 ```
 
@@ -88,6 +98,25 @@ tech4parking-back/
 4. O web app chama `/spots` na API Gateway, que invoca a mesma Lambda.
 5. A Lambda devolve a lista de vagas (ou cadastra/remove) com cabeçalhos CORS.
 6. A cada push na `main` que altere a Lambda, o GitHub Actions gera a imagem, envia ao ECR e atualiza a função.
+
+## Rodando a API localmente
+
+O `local_server.py` roda o **mesmo `lambda_handler`** da Lambda, com uma tabela em memória no lugar do DynamoDB (já com vagas de exemplo), e publica a documentação no **Swagger UI**. Não precisa de conta AWS.
+
+```bash
+pip install boto3
+python services/lambdas/process_car_parking/local_server.py
+# Swagger UI: http://localhost:8000/docs
+```
+
+```bash
+curl http://localhost:8000/spots
+curl -X POST http://localhost:8000/spots -H "Content-Type: application/json" \
+  -d '{"name": "Vaga E-03", "latitude": -23.5667, "longitude": -46.6749}'
+curl -X DELETE "http://localhost:8000/spots?spot_id=A-01"
+```
+
+A especificação da API está em [`docs/openapi.yaml`](docs/openapi.yaml) (OpenAPI 3.0).
 
 ## Deploy
 
@@ -107,6 +136,7 @@ Em uma validação end-to-end, uma mensagem do sensor e uma chamada da API devem
 
 Pontos principais de validação:
 
+- API local respondendo no Swagger UI (`http://localhost:8000/docs`);
 - workflow **Deploy Lambda process_car_parking** concluído com sucesso;
 - imagem publicada no ECR `process_car_parking-ecr-lambda`;
 - `POST /spots` criando a vaga e `GET /spots` listando-a;
