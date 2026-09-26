@@ -44,7 +44,7 @@ A Lambda roda como **imagem Docker** publicada no **Amazon ECR**, e o deploy é 
 
 ### Eventos do sensor
 
-Recebidos pela regra IoT do tópico `parking_sensor` ([tech4parking-iot](https://github.com/willtechdev/tech4parking-iot)):
+Recebidos pela regra IoT do tópico `parking_sensor` ([tech4parking-iot](https://github.com/tech4parking-org/tech4parking-iot)):
 
 ```json
 {"spot_id": "A-01", "status": "ocupada", "distance": 12.34}
@@ -54,7 +54,7 @@ Atualiza `availability`, `distance` e `updated_at` da vaga. Mensagens com status
 
 ### API `/spots`
 
-Usada pelo [tech4parking-front](https://github.com/willtechdev/tech4parking-front):
+Usada pelo [tech4parking-front](https://github.com/tech4parking-org/tech4parking-front):
 
 | Método | Rota | Finalidade |
 |---|---|---|
@@ -133,7 +133,7 @@ A especificação da API está em [`docs/openapi.yaml`](docs/openapi.yaml) (Open
 AWS_ACCOUNT_ID=<id da conta> AWS_REGION=us-east-1 ./services/lambdas/process_car_parking/deploy.sh
 ```
 
-A Lambda, o ECR, o IAM, a tabela, a API Gateway e a regra IoT são criados pelo Terraform em [tech4parking-infra](https://github.com/willtechdev/tech4parking-infra).
+A Lambda, o ECR, o IAM, a tabela, a API Gateway e a regra IoT são criados pelo Terraform em [tech4parking-infra](https://github.com/tech4parking-org/tech4parking-infra).
 
 ## Como validar a entrega
 
@@ -153,10 +153,10 @@ Pontos principais de validação:
 
 | Repositório | Camada |
 |---|---|
-| [tech4parking-front](https://github.com/willtechdev/tech4parking-front) | Web app (Next.js) |
+| [tech4parking-front](https://github.com/tech4parking-org/tech4parking-front) | Web app (Next.js) |
 | **tech4parking-back** | Lambda de vagas (sensor + API) |
-| [tech4parking-infra](https://github.com/willtechdev/tech4parking-infra) | Infraestrutura AWS (Terraform) |
-| [tech4parking-iot](https://github.com/willtechdev/tech4parking-iot) | Firmware do sensor (ESP32) |
+| [tech4parking-infra](https://github.com/tech4parking-org/tech4parking-infra) | Infraestrutura AWS (Terraform) |
+| [tech4parking-iot](https://github.com/tech4parking-org/tech4parking-iot) | Firmware do sensor (ESP32) |
 
 ## Autor
 
