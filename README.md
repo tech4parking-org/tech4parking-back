@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/logo.png" alt="T4Parking" width="260" />
+</p>
+
 <h1 align="center">
   Tech4Parking · Back
 </h1>
@@ -86,6 +90,7 @@ tech4parking-back/
 ├── docs/
 │   ├── api-demo.gif             # Demonstração da API
 │   ├── arch.gif                 # Diagrama da arquitetura
+│   ├── logo.png                 # Logo T4Parking
 │   └── openapi.yaml             # Especificação OpenAPI 3.0
 └── README.md
 ```
